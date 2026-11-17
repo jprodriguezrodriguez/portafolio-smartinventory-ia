@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Marco Conceptual | SmartInventoryIA — Versión integrada</title>
+<style>
+  :root { --ink:#263247; --muted:#627287; --blue:#174a74; --light:#eef4f8; --line:#d9e1e9; --paper:#fff; --bg:#f1f4f7; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.76 Georgia,"Times New Roman",serif; }
+  .bar { position:sticky; top:0; z-index:20; background:#fff; box-shadow:0 3px 16px #152e481a; padding:10px max(20px, calc((100vw - 1000px)/2)); display:flex; flex-wrap:wrap; align-items:center; gap:9px; font:14px/1.3 Arial,sans-serif; }
+  .bar strong { margin-right:auto; color:var(--blue); }
+  .bar button { background:#174a74; color:white; padding:10px 14px; border:0; border-radius:7px; cursor:pointer; font-weight:600; }
+  .bar button.secondary { color:#174a74; background:#eaf2f8; }
+  .bar button:focus-visible { outline:3px solid #e6b046; }
+  .canvas { max-width:1000px; margin:25px auto 60px; background:var(--paper); padding:58px 72px 78px; box-shadow:0 12px 40px #152b4021; border-radius:4px; }
+  .cover { min-height:330px; text-align:center; padding:24px 12px 20px; border-bottom:1px solid var(--line); margin-bottom:34px; }
+  .cover .institution { letter-spacing:.12em; font:700 12px/1.65 Arial,sans-serif; color:var(--muted); text-transform:uppercase; }
+  .cover h1 { color:#153f62; font:700 36px/1.18 Georgia,serif; margin:46px 0 20px; }
+  .cover .subtitle { color:var(--muted); font:600 14px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+  .cover .names { margin-top:36px; font-size:15px; }
+  h2 { color:#154667; line-height:1.25; font-size:25px; margin-top:47px; border-bottom:1px solid var(--line); padding-bottom:9px; }
+  h3 { color:#164b6f; line-height:1.35; font-size:19px; margin-top:28px; }
+  h4 { color:#23485c; font-size:16px; margin-top:23px; }
+  p { text-align:justify; margin:12px 0; }
+  .lead { color:#435b6f; font-size:17px; }
+  .small { font:13px/1.6 Arial,sans-serif; color:var(--muted); }
+  .box { border-left:4px solid #376f92; background:#f3f7fa; padding:14px 18px; margin:21px 0; }
+  .box p { margin:7px 0; }
+  .formula { background:#f6f8fb; font:14px/1.6 Arial,sans-serif; padding:14px; border-radius:5px; margin:8px 0; overflow-wrap:anywhere; }
+  table { border-collapse:collapse; width:100%; margin:19px 0; font:13px/1.55 Arial,sans-serif; }
+  th, td { border:1px solid #cedbe6; padding:10px; text-align:left; vertical-align:top; }
+  th { background:#eaf1f7; color:#153f62; font-weight:700; }
+  tbody tr:nth-child(even) { background:#f9fbfd; }
+  .table-wrap { overflow-x:auto; }
+  .table-wrap table { min-width:665px; }
+  .figure { border:1px solid var(--line); border-radius:9px; padding:17px; margin:25px 0; font:14px/1.5 Arial,sans-serif; }
+  .flow-node { background:#eaf1f7; text-align:center; padding:12px; border:1px solid #bcd0e1; border-radius:7px; }
+  .flow-node strong { display:block; color:#154667; }
+  .arrow { text-align:center; color:#4d7591; font-size:24px; line-height:1.25; padding:3px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .conditions { background:#fbfcfd; border:1px dashed #91aabf; border-radius:7px; padding:12px; margin-top:10px; text-align:center; }
+  figcaption { font:12px/1.5 Arial,sans-serif; text-align:center; color:var(--muted); margin-top:13px; }
+  .refs { padding-left:23px; }
+  .refs li { padding-left:5px; margin:10px 0; text-indent:0; overflow-wrap:anywhere; }
+  a { color:#185987; }
+  .toc { background:#f8fafc; border:1px solid var(--line); padding:20px 25px; margin:28px 0; }
+  .toc strong { font:700 14px Arial,sans-serif; text-transform:uppercase; letter-spacing:.04em; }
+  .toc ol { font:14px/1.9 Arial,sans-serif; margin:10px 0 0; padding-left:22px; }
+  .editable:focus { outline:3px solid #a0cbeb; outline-offset:6px; }
+  .edit-note { font:13px/1.5 Arial,sans-serif; color:#486078; margin:0 auto 10px; max-width:1000px; padding:0 10px; }
+  @media (max-width:750px) { .canvas { padding:25px 20px 50px; margin:0 0 35px; } .cover h1{font-size:29px;} .two{grid-template-columns:1fr;} .bar{position:static;} }
+  @media print { @page { size:A4; margin:20mm 16mm; } body { background:white; font-size:11pt; } .bar,.edit-note {display:none!important;} .canvas { padding:0; margin:0; box-shadow:none; max-width:none; } h2,h3,h4 {break-after:avoid;} table,.figure,.box { break-inside:avoid; } .cover{min-height:230px;} a{color:inherit; text-decoration:none;} }
+
+  /* Apartado 6: dos líneas analíticas, sin relación causal implícita entre ellas */
+  .model-figure { background:#fcfdff; }
+  .model-caption { text-align:center; font:700 12px/1.4 Arial,sans-serif; text-transform:uppercase; letter-spacing:.04em; color:#43617c; margin-bottom:8px; }
+  .model-central { background:#dfeef7; border-color:#80a9c8; }
+  .model-split-note { text-align:center; font:13px/1.5 Arial,sans-serif; color:#485f75; padding:14px 0 9px; }
+  .model-branches { display:grid; grid-template-columns:1fr 1fr; align-items:stretch; gap:13px; }
+  .model-track { border:1px solid #cbdce8; border-radius:8px; padding:12px; background:#f8fbfe; min-width:0; }
+  .model-track-heading { font:700 13px/1.45 Arial,sans-serif; color:#154667; text-align:center; padding:2px 0 12px; }
+  .model-track .flow-node { background:#fff; }
+  .model-track .model-result { background:#eaf1f7; border-color:#9fb8cb; }
+  .model-figure .flow-node { overflow-wrap:anywhere; }
+  .model-figure .conditions { margin-top:13px; }
+  @media (max-width:750px) { .model-branches {grid-template-columns:1fr;} }
+  @media print { .model-track { break-inside:avoid; } .model-figure{ break-inside:auto; } .model-track-heading,.model-caption{color:#154667;} }
+</style>
+</head>
+<body>
+<div aria-label="Herramientas del documento" class="bar">
+<strong>SmartInventoryIA · Marco Conceptual</strong>
+<button aria-pressed="true" class="secondary" id="editToggle" type="button">Edición activada</button>
+<button class="secondary" onclick="window.print()" type="button">Imprimir / PDF</button>
+<button id="saveHtml" type="button">Guardar una copia HTML</button>
+</div>
+<p class="edit-note">Documento HTML editable. Haz clic en el texto para modificarlo y utiliza «Guardar una copia HTML» para conservar cambios. Antes de la entrega, revisa las referencias con Zotero.</p>
+<main aria-label="Documento académico editable" class="canvas editable" contenteditable="true" id="documento" spellcheck="true">
+<header class="cover">
+<div class="institution">Universidad de Cundinamarca · Extensión Chía<br/>Facultad de Ingeniería · Ingeniería de Sistemas y Computación<br/>Ciencia, Tecnología e Innovación II</div>
+<h1>Marco Conceptual<br/>SmartInventoryIA</h1>
+<div class="subtitle">Marco conceptual integrado · Variables, indicadores y relaciones</div>
+<div class="names">José Rodolfo Hernández Suárez<br/>Jenny Paola Rodríguez Rodríguez<br/><br/>Docente: Fabio Enrique Parra Arévalo<br/>Chía, Cundinamarca · Noviembre de 2026</div>
+</header>
+<nav aria-label="Contenido" class="toc">
+<strong>Contenido</strong>
+<ol>
+<li><a href="#sec1">Delimitación del problema, pregunta y objetivos</a></li>
+<li><a href="#sec2">Conceptos centrales y su función</a></li>
+<li><a href="#sec3">Fundamentación y relaciones conceptuales</a></li>
+<li><a href="#sec4">Clasificación y justificación de variables</a></li>
+<li><a href="#sec5">Dimensiones e indicadores: operacionalización propuesta</a></li>
+<li><a href="#sec6">Modelo de relaciones entre variables</a></li>
+<li><a href="#sec7">Correspondencia con objetivos de investigación</a></li>
+<li><a href="#sec8">Integración teórica y justificación de relaciones</a></li>
+<li><a href="#sec9">Delimitación del alcance conceptual y evaluación</a></li>
+<li><a href="#sec10">Síntesis conceptual</a></li>
+<li><a href="#bibliografia">Referencias</a></li>
+</ol>
+</nav>
+<p class="lead">El marco conceptual de SmartInventoryIA se estructura a partir del problema de investigación y no solamente de un listado de definiciones. Su finalidad es diferenciar los conceptos que delimitan el estudio, los componentes de la solución tecnológica, las variables susceptibles de observación y los factores que pueden condicionar los resultados. La organización propuesta sigue la secuencia: problema → conceptos centrales → variables → dimensiones → indicadores → relaciones entre variables → objetivos.</p>
+<section id="sec1">
+<h2>1. Delimitación del problema, pregunta y objetivos</h2>
+<h3>1.1. Problema de investigación</h3>
+<p>La microempresa Delicias de la Tierrita, dedicada a la elaboración de arepas boyacenses y a servicios de cafetería, desarrolla sus actividades de ventas, producción e inventario con registros predominantemente manuales. Esta práctica dificulta la consolidación de datos históricos, su consulta oportuna y su utilización sistemática para estimar las cantidades que deben producirse y los insumos que deben reponerse. Como consecuencia potencial, se presentan riesgos de desajustes entre producción y ventas, exceso o insuficiencia de existencias y pérdidas por desperdicio o desabastecimiento. Estas dificultades constituyen el problema que SmartInventoryIA busca abordar; su magnitud deberá precisarse en el diagnóstico inicial del estudio.</p>
+<p>La solución propuesta consiste en integrar un sistema web empresarial para organizar los registros operativos con un mecanismo de pronóstico de demanda por producto basado en aprendizaje automático. El desarrollo se complementará con la comparación de dicho mecanismo frente a un método tradicional de promedio móvil. No obstante, la utilidad del sistema depende de al menos dos condiciones distintas: que las estimaciones resulten suficientemente precisas y que la información se utilice de manera pertinente en las decisiones de producción y gestión de inventarios.</p>
+<h3>1.2. Pregunta de investigación</h3>
+<div class="box"><p>¿Cómo desarrollar un sistema web empresarial inteligente con modelo predictivo de demanda por producto que optimice la planificación de la producción y la gestión de inventarios en la microempresa Delicias de la Tierrita?</p></div>
+<h3>1.3. Objetivo general</h3>
+<p>Desarrollar un sistema web empresarial inteligente con modelo predictivo de demanda por producto para optimizar la planificación de la producción y la gestión de inventarios en la microempresa Delicias de la Tierrita.</p>
+<h3>1.4. Objetivos específicos</h3>
+<ol>
+<li>Diagnosticar el estado actual de los procesos administrativos, productivos y de gestión de inventarios en la microempresa Delicias de la Tierrita.</li>
+<li>Digitalizar y estructurar los datos históricos de ventas y producción para su análisis.</li>
+<li>Diseñar la arquitectura de un sistema web empresarial multiusuario para la gestión de inventarios, producción y ventas.</li>
+<li>Implementar los módulos funcionales del sistema, incluyendo inventario, producción, ventas y reportes financieros básicos.</li>
+<li>Desarrollar y comparar un método tradicional de estimación de demanda (promedio móvil) y un modelo predictivo basado en aprendizaje automático.</li>
+<li>Evaluar el desempeño de ambos métodos mediante métricas estadísticas y analizar su impacto en la optimización de producción e inventarios.</li>
+</ol>
+<p>El objetivo general comprende la construcción de un artefacto tecnológico y su contribución esperada a dos procesos operativos. Por ello, el marco conceptual distingue entre <em>desarrollo e implementación del sistema</em>, <em>evaluación del pronóstico</em> y <em>evaluación de resultados operativos</em>. Estas tres actividades están relacionadas, pero no representan una misma variable ni aportan evidencia equivalente.</p>
+</section>
+<section id="sec2">
+<h2>2. Conceptos centrales y su función en el estudio</h2>
+<p>Los conceptos clave se seleccionan en función de su aporte específico a la comprensión del problema. No todos constituyen variables: algunos delimitan el escenario, otros describen los recursos o mecanismos de la solución y otros permiten definir resultados medibles. La diferencia importa porque una categoría teórica no se convierte automáticamente en variable por aparecer en el marco conceptual.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Concepto central</th><th>Función en SmartInventoryIA</th><th>Tratamiento metodológico propuesto</th></tr></thead>
+<tbody>
+<tr><td>Microempresa</td><td>Delimita el contexto organizacional y la unidad de estudio.</td><td>Contexto de investigación; no se plantea como variable independiente.</td></tr>
+<tr><td>Sistema de información empresarial</td><td>Integra datos y procesos de ventas, producción e inventarios.</td><td>Artefacto tecnológico; su implementación y utilización pueden observarse.</td></tr>
+<tr><td>Inteligencia artificial y aprendizaje automático</td><td>Fundamentan el método computacional de estimación.</td><td>Referentes teóricos y técnicos; no son por sí mismos variables de resultado.</td></tr>
+<tr><td>Modelo predictivo y promedio móvil</td><td>Son las alternativas utilizadas para producir pronósticos.</td><td>Modalidades de la variable independiente «método de pronóstico».</td></tr>
+<tr><td>Pronóstico de demanda</td><td>Es la estimación futura de unidades demandadas por producto.</td><td>Salida del método; su error permite evaluar el desempeño predictivo.</td></tr>
+<tr><td>Planificación de producción</td><td>Comprende decisiones sobre cantidades y momentos de producción.</td><td>Proceso de resultado susceptible de evaluación operativa.</td></tr>
+<tr><td>Gestión de inventarios y reabastecimiento</td><td>Comprende control de existencias y decisiones de reposición.</td><td>Proceso de resultado; el reabastecimiento es una actividad asociada.</td></tr>
+<tr><td>Transformación digital y alfabetización digital</td><td>Describen la incorporación del sistema y las habilidades para utilizarlo.</td><td>Condiciones organizacionales y humanas; su medición dependerá del diseño.</td></tr>
+</tbody></table></div>
+<p>Esta clasificación reemplaza la agrupación anterior de once conceptos en tres dimensiones generales, sin eliminar sus aportes. Las dimensiones <em>técnica-operativa</em>, <em>organizacional</em> y <em>humana</em> continúan siendo útiles como ejes de análisis, pero no deben confundirse con las dimensiones internas de cada variable que se presentarán posteriormente.</p>
+</section>
+<section id="sec3">
+<h2>3. Fundamentación y relaciones conceptuales</h2>
+<h3>3.1. Sistema de información empresarial y registros operativos</h3>
+<p>Los sistemas de información empresariales reúnen componentes tecnológicos, personas, datos y procesos para recopilar, almacenar, transformar y distribuir información relevante para las operaciones y la toma de decisiones (Laudon &amp; Laudon, 2020). La articulación de los sistemas empresariales con capacidades analíticas permite que la información almacenada se convierta en un recurso para la gestión organizacional (Wang et al., 2022).</p>
+<p>En Delicias de la Tierrita, la función propuesta del sistema web es centralizar registros de ventas, producción y existencias. La digitalización no equivale automáticamente a información confiable: la completitud, continuidad temporal, consistencia de unidades y disponibilidad por producto condicionarán la posibilidad de entrenar y evaluar modelos. Por tanto, la calidad de los datos debe observarse como una condición de la evaluación predictiva y no solamente como una característica técnica del sistema.</p>
+<h3>3.2. Aprendizaje automático, modelo predictivo y pronóstico</h3>
+<p>La inteligencia artificial constituye un campo más amplio que incluye distintas estrategias de representación y resolución de problemas (Russell &amp; Norvig, 2021). Dentro de este campo, el aprendizaje automático permite construir modelos que identifican patrones a partir de los datos (Janiesch et al., 2021). En SmartInventoryIA, el aprendizaje automático se utilizará para construir un modelo cuyo resultado sea una estimación de demanda futura por producto.</p>
+<p>El <strong>modelo predictivo</strong> es el mecanismo entrenado para estimar valores; el <strong>pronóstico</strong> es la estimación obtenida; y el <strong>error de pronóstico</strong> es la diferencia entre la estimación y el valor observado posteriormente. La literatura sobre pronóstico de demanda y series temporales destaca la importancia del comportamiento temporal, los datos disponibles y las decisiones de evaluación (Kotu &amp; Deshpande, 2019; Fildes et al., 2022).</p>
+<p>El promedio móvil constituye el método de referencia definido por los objetivos del proyecto. La comparación entre este método y el aprendizaje automático es pertinente porque la mayor complejidad computacional no garantiza necesariamente un mejor pronóstico, tal como advierten las comparaciones metodológicas de Makridakis et al. (2018). Franco et al. (2026) aportan un antecedente de aplicación de aprendizaje automático al pronóstico orientado a micro y pequeñas empresas; Dornela Goulart et al. (2026) muestran otro contexto de implementación, cuya escala y recursos difieren de los del caso estudiado.</p>
+<h3>3.3. Pronóstico, planificación de la producción y gestión de inventarios</h3>
+<p>La planificación de la producción determina qué cantidades producir y cuándo hacerlo, considerando la demanda prevista, las existencias y los recursos disponibles. La gestión de inventarios comprende el control de existencias y las decisiones necesarias para mantener niveles apropiados de materiales y productos (Heizer et al., 2017). El reabastecimiento se refiere, de forma más específica, a decidir cuándo y cuánto reponer.</p>
+<p>Los pronósticos pueden contribuir a estas decisiones, pero sus resultados deben interpretarse junto con restricciones de capacidad productiva, existencia disponible, tiempos de entrega de proveedores y variabilidad de la demanda. Goltsos et al. (2022) examinan la relación entre pronósticos y control de inventarios; Prak y Teunter (2019) destacan la relevancia de incorporar la incertidumbre de pronóstico en los modelos de inventario. De este modo, se justifica conceptualmente el vínculo entre estimación de demanda y decisiones operativas, sin asumir una relación automática ni causal.</p>
+<p>Wahedi et al. (2023) advierten, desde la comparación entre pronósticos y planificación de inventarios, que la precisión estadística y la utilidad operativa deben evaluarse separadamente. Este punto es decisivo para SmartInventoryIA: obtener menores errores de predicción constituye evidencia de desempeño del modelo, pero solo las mediciones de producción e inventario podrán sustentar afirmaciones de mejora operativa.</p>
+<h3>3.4. Condiciones organizacionales y humanas</h3>
+<p>La incorporación de tecnologías digitales requiere considerar recursos, procesos, compatibilidad de la herramienta y capacidades de las personas responsables de utilizarla. Los estudios sobre adopción y transformación digital de pequeñas y medianas empresas analizan estos factores desde perspectivas tecnológicas y organizacionales (Omrani et al., 2024; Sánchez et al., 2025). La alfabetización digital se vincula con las habilidades para registrar, consultar e interpretar información mediante herramientas tecnológicas (Raharjo et al., 2024; Zahoor et al., 2023).</p>
+<p>Para la microempresa estudiada, estas condiciones pueden facilitar o dificultar que los pronósticos se utilicen efectivamente en las decisiones diarias. Sin embargo, dado que se estudia una sola organización, no es metodológicamente adecuado afirmar que la alfabetización digital actuará como variable moderadora en sentido estadístico sin disponer de suficientes observaciones y de un diseño que permita examinar esa interacción. Inicialmente se propone tratarla como un factor contextual de interpretación, medible de manera descriptiva si los instrumentos lo permiten.</p>
+</section>
+<section id="sec4">
+<h2>4. Clasificación y justificación de las variables de investigación</h2>
+<p>La identificación de variables se deriva directamente de la pregunta y de los objetivos del estudio. En SmartInventoryIA se distingue una relación principal de evaluación predictiva y una segunda relación operativa propuesta, cuya contrastación dependerá de los registros disponibles. Esta distinción evita considerar todos los conceptos del marco teórico como variables y separa la precisión de una predicción de los resultados de la gestión empresarial. Se emplean las denominaciones «independiente» y «dependiente» para describir el papel analítico de cada variable, sin asumir relaciones causales demostradas.</p>
+<h3>4.1. Matriz de clasificación general</h3>
+<p>La Tabla siguiente sintetiza la naturaleza, el papel y la pertinencia de los elementos que sí podrían observarse o medirse dentro del alcance del proyecto. Las condiciones de medición definitivas deberán precisarse con los datos del diagnóstico inicial.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Código y elemento</th><th>Clasificación</th><th>Naturaleza u observación</th><th>Justificación y vínculo con objetivos</th></tr></thead>
+<tbody>
+<tr><td><strong>X1. Método de pronóstico de demanda</strong></td><td>Independiente, para la comparación predictiva</td><td>Cualitativa nominal: promedio móvil o modelo de aprendizaje automático.</td><td>Se selecciona el procedimiento de estimación para examinar si el error difiere entre métodos; corresponde a los objetivos específicos 5 y 6.</td></tr>
+<tr><td><strong>Y1. Error del pronóstico</strong></td><td>Dependiente, para la comparación predictiva</td><td>Cuantitativa, obtenida de diferencias entre valores estimados y observados; sintetizable mediante MAE y RMSE.</td><td>Constituye el resultado mensurable de la comparación en igualdad de condiciones (objetivos 5 y 6).</td></tr>
+<tr><td><strong>X2. Uso de SmartInventoryIA en decisiones operativas</strong></td><td>Factor explicativo observado, no manipulado experimentalmente</td><td>Frecuencia o evidencia documentada de consulta y aplicación de información del sistema, si existe trazabilidad.</td><td>Permite explorar si el sistema se incorpora a la planificación y al control; se vincula con implementación y evaluación (objetivos 4 y 6).</td></tr>
+<tr><td><strong>Y2a. Desempeño de la planificación de producción</strong></td><td>Dependiente o resultado operativo</td><td>Indicadores cuantitativos de ajuste entre producción y requerimientos, y de mermas, según registros disponibles.</td><td>Representa uno de los procesos que el objetivo general pretende optimizar; su evaluación corresponde al objetivo 6.</td></tr>
+<tr><td><strong>Y2b. Desempeño de la gestión de inventarios</strong></td><td>Dependiente o resultado operativo</td><td>Indicadores cuantitativos de disponibilidad, faltantes y concordancia de existencias, según registros disponibles.</td><td>Representa el segundo proceso que se pretende optimizar; se diferencia de la planificación de producción (objetivo 6).</td></tr>
+<tr><td><strong>C1. Calidad y disponibilidad de los datos</strong></td><td>Condición de evaluación y factor de control metodológico</td><td>Completitud, continuidad y cobertura de registros por producto y periodo.</td><td>Incide en la viabilidad y confiabilidad de las estimaciones; se caracteriza en los objetivos 1 y 2 y se considera al comparar métodos.</td></tr>
+<tr><td><strong>C2. Producto, periodo y horizonte de pronóstico</strong></td><td>Condiciones de comparación</td><td>Identificadores y unidades temporales establecidos para cada evaluación.</td><td>Se mantienen equivalentes o se analizan por estratos para que los métodos se comparen de forma justa (objetivos 5 y 6).</td></tr>
+</tbody></table></div>
+<p><strong>Distinción importante:</strong> la <em>demanda observada</em> por producto y periodo constituye el valor de referencia o <em>variable objetivo</em> que los algoritmos intentan estimar. No equivale a Y1: el error de pronóstico surge únicamente al contrastar esa demanda —o su aproximación a través de ventas registradas— con el valor predicho. Si la empresa no documenta solicitudes no atendidas, las ventas observadas podrían subestimar la demanda real.</p>
+<h3>4.2. Primera relación: método de pronóstico y error predictivo</h3>
+<p><strong>X1 es independiente</strong> porque en la evaluación se elige entre dos procedimientos definidos por el proyecto: promedio móvil como método de referencia y aprendizaje automático como método propuesto. <strong>Y1 es dependiente</strong> porque los resultados del procedimiento se valoran según su distancia respecto de la demanda observada. La literatura sobre evaluación de métodos de pronóstico sostiene la pertinencia de contrastar enfoques simples y más complejos mediante métricas comparables, sin presuponer la superioridad de uno de ellos (Makridakis et al., 2018).</p>
+<p>Para que la comparación tenga sentido, ambos métodos deben evaluarse sobre los mismos productos, los mismos periodos de prueba y el mismo horizonte temporal. Los conjuntos de entrenamiento y prueba deberán respetar la secuencia cronológica. De este modo, los cambios en MAE o RMSE podrán interpretarse como diferencias de desempeño entre métodos dentro del conjunto evaluado, pero no necesariamente como resultados generalizables a cualquier microempresa.</p>
+<h3>4.3. Segunda relación: uso del sistema y desempeño de procesos</h3>
+<p>El uso de SmartInventoryIA se propone como <strong>factor explicativo X2</strong> solo si es posible observarlo de manera consistente, por ejemplo, mediante consultas registradas, decisiones documentadas o evidencia de incorporación de los pronósticos a la planificación. No se considera, en esta fase, una intervención manipulada experimentalmente. Si el proyecto únicamente implementa la herramienta sin medir su utilización, X2 deberá describirse como <em>categoría de análisis</em> y no presentarse como una variable empíricamente contrastada.</p>
+<p>Los resultados operativos se desagregan en <strong>Y2a, desempeño de planificación de producción</strong>, y <strong>Y2b, desempeño de gestión de inventarios</strong>. La distinción está justificada porque decidir cantidades de producción y controlar niveles de existencias son procesos relacionados, pero no idénticos. Goltsos et al. (2022) y Prak y Teunter (2019) ofrecen fundamentos para vincular los pronósticos con las decisiones de inventario bajo incertidumbre. Asimismo, Wahedi et al. (2023) permiten sustentar la necesidad de examinar por separado la precisión estadística y la utilidad operativa.</p>
+<p>Por tanto, la relación X2 → Y2a/Y2b es una <strong>proposición conceptual que orientará la evaluación</strong>, no un efecto ya demostrado. Si existen registros de línea base y un periodo posterior comparable, podrán analizarse cambios operativos. Sin embargo, una comparación antes-después, por sí sola, no permite atribuir esos cambios exclusivamente al sistema: es preciso considerar estacionalidad, variación de ventas, precios, capacidad de producción y condiciones de abastecimiento.</p>
+<h3>4.4. Factores condicionantes, contextuales y posibles relaciones intervinientes</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Elemento</th><th>Función en la investigación</th><th>Tratamiento propuesto</th></tr></thead>
+<tbody>
+<tr><td><strong>Calidad y disponibilidad de datos (C1)</strong></td><td>Condiciona las estimaciones y su interpretación.</td><td>Caracterización descriptiva de registros; misma base de prueba para ambos métodos. No se asume que disponer de más datos garantice automáticamente menor error.</td></tr>
+<tr><td><strong>Producto, horizonte y periodo (C2)</strong></td><td>Son fuentes potenciales de variación en el error.</td><td>Se fijan, emparejan o analizan por grupos durante la comparación.</td></tr>
+<tr><td><strong>Capacidad productiva, tiempos de entrega y existencias iniciales</strong></td><td>Restricciones que afectan las decisiones y el desempeño operativo.</td><td>Condiciones de contexto que deben documentarse, en la medida de lo posible, al interpretar Y2a y Y2b.</td></tr>
+<tr><td><strong>Alfabetización digital y acompañamiento</strong></td><td>Pueden influir en la comprensión de reportes y el uso de la herramienta.</td><td>Categorías contextuales, observables descriptivamente si se aplica un instrumento; no se declaran moderadoras demostradas.</td></tr>
+<tr><td><strong>Transformación digital</strong></td><td>Marco para interpretar la incorporación del sistema a los procesos existentes.</td><td>Concepto organizacional; no se convierte automáticamente en variable dependiente.</td></tr>
+</tbody></table></div>
+<p>En sentido estricto, una <strong>variable moderadora</strong> modifica la intensidad o dirección de una relación; una <strong>variable mediadora</strong> representa un mecanismo intermedio que se somete a evaluación; y una <strong>variable de control</strong> es una condición que se mantiene constante o se incorpora al análisis para reducir explicaciones alternativas. Para este estudio, la calidad de los datos y las condiciones de comparación sí requieren control metodológico; en cambio, no se plantea comprobar estadísticamente mediaciones o moderaciones con los datos actualmente previstos.</p>
+<p>Conceptualmente, el pronóstico puede ser un mecanismo por el que los registros se transforman en información para decidir, pero ello <strong>no significa que se haya definido o probado una mediación estadística</strong>. En una sola microempresa, y sin un diseño específico, conviene limitar la interpretación de alfabetización digital y adopción tecnológica a factores de contexto. Los enfoques de adopción tecnológica y alfabetización digital expuestos por Sánchez et al. (2025), Omrani et al. (2024), Raharjo et al. (2024) y Zahoor et al. (2023) respaldan su relevancia conceptual, no la existencia de efectos causales demostrados en Delicias de la Tierrita.</p>
+<h3>4.5. Criterio para conservar o ajustar la clasificación</h3>
+<p>Esta propuesta conserva como variables principales aquellas que tienen relación directa con la pregunta de investigación, los objetivos específicos y una forma razonable de observación. La clasificación se confirmará tras el diagnóstico: X1 y Y1 son imprescindibles para la comparación de métodos del objetivo 5; Y2a y Y2b se analizarán según la disponibilidad de evidencia operativa para el objetivo 6. X2 no se considerará variable medida hasta que se adopte una decisión metodológica explícita sobre su observación. Cuando no existan registros válidos para una medida, se explicitará la limitación en lugar de atribuir un efecto que el estudio no pudo contrastar.</p>
+</section>
+<section id="sec5">
+<h2>5. Dimensiones e indicadores: operacionalización propuesta</h2>
+<p>La operacionalización permite pasar de los conceptos y las variables formulados en el marco conceptual a propiedades observables que podrán examinarse durante la investigación. Una <strong>variable</strong> representa una característica que se compara o registra; sus <strong>dimensiones</strong> delimitan facetas relevantes de esa característica; y sus <strong>indicadores</strong> señalan las medidas o evidencias que permiten examinarla. Por ello, las dimensiones técnica-operativa, organizacional y humana empleadas para ordenar la revisión conceptual no equivalen, por sí mismas, a dimensiones de una misma variable.</p>
+<p>Para SmartInventoryIA se propone una operacionalización en dos ámbitos complementarios: <strong>evaluación predictiva</strong> (X1 y Y1) y <strong>evaluación operativa</strong> (Y2a y Y2b). Se registrarán además condiciones relativas a los datos y al contexto de la microempresa. La decisión sobre medir el <strong>uso de SmartInventoryIA (X2)</strong> permanece abierta; en consecuencia, no se presenta todavía como un indicador obligatorio ni como una relación causal demostrada.</p>
+<h3>5.1. Criterios para seleccionar dimensiones e indicadores</h3>
+<p>Los indicadores se priorizan según su correspondencia con los objetivos, su posibilidad real de medición y la calidad de la evidencia disponible. Se diferencian tres niveles:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Nivel</th><th>Alcance de la evidencia</th><th>Decisión para el estudio</th></tr></thead>
+<tbody>
+<tr><td><strong>Esencial</strong></td><td>Comparación del promedio móvil con el modelo de aprendizaje automático, utilizando pronósticos y valores observados en condiciones equivalentes.</td><td>Definir X1 y medir Y1 mediante MAE y RMSE. Caracterizar la completitud y la continuidad de los datos utilizados (C1).</td></tr>
+<tr><td><strong>Condicionado</strong></td><td>Evaluación de procesos de producción e inventarios, únicamente cuando existan registros confiables de planificación, producción, merma, faltantes o conteos.</td><td>Seleccionar medidas de Y2a y Y2b de acuerdo con el diagnóstico y justificar las que no sean calculables.</td></tr>
+<tr><td><strong>Contextual o pendiente</strong></td><td>Habilidades digitales, recursos, restricciones operativas y posible utilización de los pronósticos en decisiones.</td><td>Caracterizar condiciones relevantes sin afirmar mediaciones, moderaciones ni efectos del uso de SmartInventoryIA que no se hayan medido.</td></tr>
+</tbody></table></div>
+<p>En el componente predictivo, cada comparación se realizará sobre observaciones producto–periodo, dentro de un horizonte de pronóstico y un conjunto de prueba comunes. La granularidad definitiva (por ejemplo, diaria o semanal), los productos incluidos y los periodos utilizables se establecerán en el Marco Metodológico a partir de los datos disponibles. Las observaciones producto–periodo no equivalen a una muestra de múltiples empresas. La literatura recomienda comparar métodos en condiciones equivalentes y distinguir exactitud estadística de utilidad operativa (Makridakis et al., 2018; Wahedi et al., 2023).</p>
+<h3>5.2. Operacionalización de la evaluación predictiva</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Variable o condición</th><th>Dimensión</th><th>Indicador y definición operacional</th><th>Unidad, fuente y finalidad</th><th>Prioridad</th></tr></thead>
+<tbody>
+<tr><td><strong>X1. Método de pronóstico</strong><br/>Independiente; cualitativa nominal</td><td>Procedimiento de estimación</td><td>Tipo de método utilizado: <em>promedio móvil</em> o <em>modelo de aprendizaje automático</em>. Se documentarán parámetros, producto, horizonte y fecha de cada predicción.</td><td>Categoría nominal. Bitácora de experimentos y configuración de los métodos. Objetivos 5 y 6.</td><td>Esencial</td></tr>
+<tr><td><strong>Y1. Error del pronóstico</strong><br/>Dependiente; cuantitativa</td><td>Magnitud media de los errores</td><td><strong>MAE:</strong> media de los valores absolutos de las diferencias entre el valor observado y el pronosticado, sobre las mismas observaciones de prueba.</td><td>Unidades del producto pronosticado. Registros observados y resultados de ambos métodos. Objetivos 5 y 6.</td><td>Esencial</td></tr>
+<tr><td><strong>Y1. Error del pronóstico</strong><br/>Dependiente; cuantitativa</td><td>Sensibilidad a errores elevados</td><td><strong>RMSE:</strong> raíz cuadrada de la media de los errores al cuadrado, calculada sobre idénticas observaciones.</td><td>Unidades del producto pronosticado. Registros observados y predicciones. Objetivos 5 y 6.</td><td>Esencial</td></tr>
+<tr><td><strong>C1. Calidad de los datos</strong><br/>Condición de evaluación</td><td>Completitud de los registros</td><td><strong>Porcentaje de registros completos:</strong> registros que contienen los campos mínimos definidos para el análisis divididos entre los registros revisados, multiplicado por 100.</td><td>Porcentaje (%). Diagnóstico de la base histórica digitalizada. Objetivos 1 y 2; permite interpretar el objetivo 5.</td><td>Esencial para caracterización</td></tr>
+<tr><td><strong>C1. Calidad de los datos</strong><br/>Condición de evaluación</td><td>Continuidad y cobertura temporal</td><td>Periodos con información válida por producto; proporción frente a los periodos esperados, cuando el calendario de operación pueda reconstruirse.</td><td>Número de periodos y, si procede, porcentaje. Registros de ventas y producción. Objetivos 1 y 2.</td><td>Esencial para caracterización</td></tr>
+</tbody></table></div>
+<div class="formula"><strong>MAE</strong> = (1/n) × Σ |y<sub>t</sub> − ŷ<sub>t</sub>|<br/><strong>RMSE</strong> = √[(1/n) × Σ (y<sub>t</sub> − ŷ<sub>t</sub>)²]<br/><span class="small">Donde y<sub>t</sub> corresponde al valor observado, ŷ<sub>t</sub> al pronóstico del mismo producto y periodo, y n al número de observaciones evaluadas. Menor MAE o RMSE significa menor error en el conjunto examinado.</span></div>
+<p>Ambos métodos deberán compararse con la misma partición temporal de evaluación, las mismas unidades y el mismo horizonte, evitando introducir información futura en el entrenamiento. Si se calculan errores para diferentes productos, estos se reportarán por producto o mediante una agregación explícitamente justificada, pues las escalas de venta pueden ser diferentes. No se selecciona inicialmente MAPE como medida principal, debido a sus dificultades cuando la demanda observada es cero o muy pequeña.</p>
+<div class="box"><p><strong>Delimitación del valor observado.</strong> Cuando no exista registro de pedidos no atendidos, las ventas registradas serán una <em>aproximación</em> de la demanda y no una medida completa de esta. Asimismo, una fecha sin registro no equivale necesariamente a una venta de cero unidades: esa distinción deberá resolverse durante la depuración de datos.</p></div>
+<h3>5.3. Operacionalización de la planificación de producción y los inventarios</h3>
+<p>Los resultados operativos Y2a y Y2b representan dos procesos relacionados pero distintos. Los siguientes indicadores son <strong>candidatos condicionados</strong>: expresan qué se desearía observar, pero no se afirma que Delicias de la Tierrita registre actualmente todas las variables necesarias. Su inclusión definitiva dependerá del diagnóstico y de la posibilidad de establecer comparaciones válidas entre periodos.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Variable de resultado</th><th>Dimensión</th><th>Indicador y forma de medición</th><th>Fuente y restricción</th><th>Vínculo</th></tr></thead>
+<tbody>
+<tr><td><strong>Y2a. Planificación de producción</strong></td><td>Cumplimiento de la programación</td><td><strong>Desviación de producción:</strong> |unidades planificadas − unidades producidas|, por producto y periodo.</td><td>Plan o programación previa y registro de producción real. Solo mide cumplimiento de la programación; no demuestra por sí mismo que el plan respondiera correctamente a la demanda.</td><td>Objetivo 6, condicionado</td></tr>
+<tr><td><strong>Y2a. Planificación de producción</strong></td><td>Ajuste del plan a la demanda atendida</td><td><strong>Desviación respecto de ventas:</strong> |unidades previstas para atender ventas − unidades vendidas|, por producto y periodo; se reportará solo como aproximación.</td><td>Programación de cantidades y ventas. Requiere considerar inventario inicial, acumulación de existencias y posibles pedidos insatisfechos; no equivale a desperdicio ni a demanda real.</td><td>Objetivo 6, condicionado</td></tr>
+<tr><td><strong>Y2a. Planificación de producción</strong></td><td>Aprovechamiento de producto terminado</td><td><strong>Tasa de merma:</strong> (unidades de producto terminado descartadas ÷ unidades producidas) × 100, sobre el mismo intervalo y productos.</td><td>Registro verificable de descartes y de producción. La definición de «merma» debe distinguir vencimiento, daño, devolución y otros motivos; no equiparar automáticamente no vendido con desperdiciado.</td><td>Objetivo 6, condicionado</td></tr>
+<tr><td><strong>Y2b. Gestión de inventarios</strong></td><td>Disponibilidad</td><td><strong>Episodios de agotamiento:</strong> número de faltantes de producto o insumo comprobados en un periodo previamente definido.</td><td>Bitácora de faltantes o movimientos de inventario suficientemente detallados. Un saldo igual a cero no prueba por sí solo que existiera demanda insatisfecha.</td><td>Objetivo 6, condicionado</td></tr>
+<tr><td><strong>Y2b. Gestión de inventarios</strong></td><td>Exactitud del registro de existencias</td><td><strong>Discrepancia de inventario:</strong> |cantidad física contada − cantidad registrada en el sistema|, por artículo y fecha de conteo.</td><td>Conteos físicos y existencias registradas en una misma fecha y unidad. Se debe considerar que el paso de registro manual a digital puede modificar cómo se detectan diferencias.</td><td>Objetivo 6, condicionado</td></tr>
+<tr><td><strong>Y2b. Gestión de inventarios</strong></td><td>Oportunidad del reabastecimiento</td><td><strong>Reposiciones tardías:</strong> número o proporción de pedidos recibidos después de la fecha prevista, si esta información se documenta.</td><td>Fechas previstas y reales de abastecimiento. Solo aplicable si existen compromisos y registros comparables; los retrasos pueden depender del proveedor.</td><td>Objetivo 6, complementario</td></tr>
+</tbody></table></div>
+<p>Los estudios sobre integración de pronósticos e inventarios muestran que las decisiones operativas dependen, además de las estimaciones, de restricciones de reposición e incertidumbre (Goltsos et al., 2022; Prak &amp; Teunter, 2019). En consecuencia, la selección de indicadores operativos deberá considerar la capacidad productiva, las existencias iniciales, la periodicidad del abastecimiento y la estacionalidad, evitando atribuir automáticamente sus variaciones al sistema.</p>
+<h3>5.4. Factores contextuales y variable pendiente de decisión</h3>
+<p>La <strong>alfabetización digital</strong> se conserva como categoría contextual para interpretar las habilidades de registro, consulta e interpretación de resultados; podrá describirse mediante observación o entrevista, si esos instrumentos se incorporan al diseño. Del mismo modo, las restricciones de producción, el abastecimiento y la disponibilidad de recursos se documentarán como condiciones del caso, sin presentarlas como variables moderadoras estadísticamente probadas.</p>
+<p>Respecto de <strong>X2, uso de SmartInventoryIA</strong>, se mantiene expresamente <strong>pendiente de decisión metodológica</strong>. Si se acuerda observar su utilización, será necesario definir qué constituye una consulta o una decisión apoyada en la plataforma, la evidencia que se recopilará y el periodo de observación. Hasta entonces, no se establece indicador obligatorio de X2 ni se asume demostrada una relación entre frecuencia de uso y mejoras operativas.</p>
+<h3>5.5. Correspondencia de los indicadores con la evaluación metodológica</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Bloque de evaluación</th><th>Evidencias mínimas o condicionadas</th><th>Instrumentos o registros por definir en el Marco Metodológico</th></tr></thead>
+<tbody>
+<tr><td><strong>Diagnóstico y preparación</strong><br/>Objetivos 1 y 2</td><td>Campos disponibles, registros completos, continuidad por producto y proceso actual de registro.</td><td>Ficha de caracterización de procesos; matriz de calidad del histórico; criterios de depuración y tratamiento de faltantes.</td></tr>
+<tr><td><strong>Comparación de pronósticos</strong><br/>Objetivos 5 y 6</td><td>Valores reales o aproximaciones observadas, predicciones emparejadas, MAE y RMSE de ambos métodos.</td><td>Protocolo de evaluación temporal; conjunto de prueba; bitácora de experimentos y hoja o script de métricas.</td></tr>
+<tr><td><strong>Análisis de operación</strong><br/>Objetivo 6</td><td>Solo los indicadores Y2a/Y2b respaldados por programación, producción, inventarios o conteos verificables.</td><td>Formato de línea base y de seguimiento; definiciones de evento, unidad, periodicidad y fuente de cada indicador.</td></tr>
+<tr><td><strong>Desarrollo del software</strong><br/>Objetivos 3 y 4</td><td>Arquitectura, requisitos, módulos, pruebas y evidencia funcional. No son indicadores predictivos ni deben confundirse con ellos.</td><td>Documentación de diseño, casos de prueba y criterios de aceptación funcional.</td></tr>
+</tbody></table></div>
+<p>El Marco Metodológico precisará la población o unidad de análisis, las fuentes de información, los periodos, las técnicas e instrumentos de recolección, la preparación de datos, el procedimiento de comparación y las limitaciones. Para afirmar una <em>mejora operativa observada</em> será necesario contar con una línea base y un periodo posterior suficientemente comparables; si solo se dispone de simulaciones o análisis retrospectivos, sus resultados se presentarán como estimaciones bajo supuestos y no como beneficios reales ya conseguidos.</p>
+</section>
+<section id="sec6">
+<h2>6. Modelo de relaciones entre variables</h2>
+<p>El modelo de relaciones de SmartInventoryIA se construye a partir de la pregunta de investigación y de las variables identificadas en el apartado 4, utilizando los indicadores propuestos en el apartado 5. Para evitar interpretaciones equivocadas, se distinguen <strong>dos relaciones analíticas</strong>: una relación predictiva, que compara métodos según su error de pronóstico, y una relación operativa, que examina la posible utilidad de las estimaciones para orientar decisiones de producción e inventarios. Ambas se conectan por <strong>los pronósticos generados</strong>, no por los valores del error estadístico.</p>
+<p>Las relaciones se presentan como proposiciones de investigación y flujos de información. Su representación no supone que el sistema ya esté implementado, que las mejoras hayan ocurrido o que exista evidencia causal. La evaluación empírica se delimitará de acuerdo con los datos disponibles y el diseño del Marco Metodológico.</p>
+<figure aria-label="Diagrama de la relación predictiva y operativa de SmartInventoryIA" class="figure model-figure">
+<div class="model-caption">Origen común de información</div>
+<div class="flow-node"><strong>Registros históricos por producto y periodo</strong>Ventas y producción digitalizadas; calidad y continuidad de datos (C1)</div>
+<div aria-hidden="true" class="arrow">↓</div>
+<div class="flow-node"><strong>X1. Método de pronóstico</strong>Promedio móvil (referencia) frente a aprendizaje automático (propuesta), bajo condiciones comparables (C2)</div>
+<div aria-hidden="true" class="arrow">↓</div>
+<div class="flow-node model-central"><strong>Estimaciones de demanda por producto y periodo</strong>Pronósticos generados por cada método, diferenciados del error con el que luego serán evaluados</div>
+<div class="model-split-note">Desde los pronósticos se distinguen dos líneas de análisis:</div>
+<div class="model-branches">
+<div class="model-track">
+<div class="model-track-heading">A · Evaluación predictiva</div>
+<div class="flow-node"><strong>Comparación con valores observados</strong>Mismos productos, periodos, unidades y horizonte; ventas como aproximación si no se dispone de demanda completa</div>
+<div aria-hidden="true" class="arrow">↓</div>
+<div class="flow-node model-result"><strong>Y1. Error del pronóstico</strong>Indicadores MAE y RMSE. Permiten comparar métodos; no constituyen por sí mismos una mejora operativa.</div>
+</div>
+<div class="model-track">
+<div class="model-track-heading">B · Relación operativa propuesta</div>
+<div class="flow-node"><strong>Pronóstico disponible para decidir</strong>Su utilización efectiva en SmartInventoryIA (X2) permanece pendiente de decisión metodológica</div>
+<div aria-hidden="true" class="arrow">↓</div>
+<div class="flow-node"><strong>Decisiones con restricciones reales</strong>Plan de producción, existencias, capacidad productiva, insumos y tiempos de entrega</div>
+<div aria-hidden="true" class="arrow">↓</div>
+<div class="flow-node model-result"><strong>Y2a / Y2b. Resultados operativos</strong>Planificación de producción y gestión de inventarios; evaluación solo con evidencia disponible y comparable</div>
+</div>
+</div>
+<div class="conditions"><strong>Condiciones de interpretación:</strong> calidad de los datos (C1), producto y horizonte de evaluación (C2), estacionalidad, condiciones de abastecimiento, capacidad de producción y habilidades digitales.</div>
+<figcaption>Figura 1. Relaciones analíticas propuestas para SmartInventoryIA. Elaboración propia. La rama A evalúa la precisión; la rama B plantea un posible uso operativo de los pronósticos. Ninguna flecha representa causalidad comprobada. Los nuevos registros podrían alimentar evaluaciones posteriores, pero no se presupone reentrenamiento automático del modelo.</figcaption>
+</figure>
+<h3>6.1. Relación predictiva: método de pronóstico (X1) y error (Y1)</h3>
+<p>La primera relación considera el <strong>método de pronóstico (X1)</strong> como variable independiente de comparación: se contrastará un promedio móvil con un modelo basado en aprendizaje automático. El <strong>error predictivo (Y1)</strong> constituye la variable de resultado y se medirá mediante MAE y RMSE, calculados a partir de predicciones emparejadas con los valores observados de cada producto y periodo. La evaluación responderá a la pregunta de si, para los datos examinados, los métodos presentan diferencias en su desempeño; no se presupone que el método de aprendizaje automático será superior.</p>
+<p>Para interpretar esa relación, los dos métodos deberán compararse con la <strong>misma muestra temporal de prueba, los mismos productos, las mismas unidades y el mismo horizonte de pronóstico</strong>. Se documentarán los parámetros aplicados y se evitará usar información futura para entrenar el modelo. La calidad y la disponibilidad del histórico (C1), así como la identificación del producto, el periodo y el horizonte (C2), se tratarán como condiciones de validez y control de la comparación. Makridakis et al. (2018) justifican la comparación empírica entre enfoques estadísticos y de aprendizaje automático; Fildes et al. (2022) y Kotu y Deshpande (2019) aportan fundamentos para el análisis de pronósticos y series temporales.</p>
+<p>La <strong>demanda observada o su aproximación mediante ventas registradas</strong> será el valor de referencia frente al cual se calcula el error. No debe confundirse con Y1: el pronóstico es una estimación, el valor observado es el dato de contraste y el error es su diferencia. Cuando existan ventas no realizadas por agotamiento de existencias, la información registrada puede subestimar la demanda real; esta limitación deberá explicitarse.</p>
+<h3>6.2. Relación operativa propuesta: pronósticos y resultados de producción e inventario</h3>
+<p>La segunda relación parte de que un pronóstico por producto puede <strong>servir como insumo de información</strong> para definir cantidades a producir y necesidades de reabastecimiento. Esta relación no equivale a afirmar que el pronóstico determina las decisiones: para decidir también se requieren datos sobre existencias, capacidad productiva, materias primas, tiempos de entrega y condiciones de operación. La administración de operaciones y la literatura sobre pronósticos e inventarios sustentan esta vinculación conceptual (Heizer et al., 2017; Goltsos et al., 2022; Prak &amp; Teunter, 2019).</p>
+<p>Los posibles resultados se distinguen en <strong>Y2a: desempeño de la planificación de producción</strong> y <strong>Y2b: desempeño de la gestión de inventarios</strong>, cada uno con dimensiones e indicadores específicos definidos en el apartado 5. No son equivalentes: cumplir un plan de producción no garantiza que las cantidades producidas respondan a la demanda, y mantener registros de inventario no garantiza por sí mismo la disponibilidad de insumos. Wahedi et al. (2023) respaldan la conveniencia de examinar la utilidad operativa separadamente de la exactitud predictiva.</p>
+<p>El <strong>uso de SmartInventoryIA (X2)</strong> se mantiene <strong>pendiente de decisión metodológica</strong>. Por lo tanto, se incluye únicamente como posible vínculo entre el pronóstico disponible y la decisión humana, sin atribuirle todavía indicadores, función causal o efectos observados. Si no se mide de forma válida, la evaluación se limitará al análisis de los resultados operativos que puedan documentarse, sin afirmar que sus cambios se debieron al uso del sistema.</p>
+<p>Cuando existan registros anteriores y posteriores suficientes y comparables, podrán describirse cambios en indicadores de producción e inventario. Si no se cuenta con esa evidencia, podrá considerarse un análisis retrospectivo o una simulación claramente identificada como tal; sus resultados no deberán presentarse como mejoras reales verificadas. Incluso con mediciones antes y después, factores externos podrían explicar parte de las variaciones.</p>
+<h3>6.3. Condiciones de control e interpretación; ausencia de mediaciones comprobadas</h3>
+<p>En el componente predictivo, la calidad de datos (C1), el producto, el periodo y el horizonte de pronóstico (C2) influyen en la comparabilidad de los resultados; por ello, se caracterizarán o mantendrán equivalentes según corresponda. En el componente operativo, la estacionalidad, la capacidad productiva, el abastecimiento y las existencias iniciales son condiciones relevantes para interpretar posibles cambios en Y2a y Y2b. Las capacidades digitales y el acompañamiento de los usuarios se conservarán como <strong>categorías contextuales</strong> de implementación (Sánchez et al., 2025; Omrani et al., 2024; Raharjo et al., 2024; Zahoor et al., 2023).</p>
+<p>No se formulan hipótesis estadísticas de <em>mediación</em> o <em>moderación</em> sin definir antes un diseño que permita estimarlas. Aunque conceptualmente el uso de las estimaciones podría intervenir entre la disponibilidad del pronóstico y las decisiones, la investigación no ha establecido todavía cómo medir esa relación. Del mismo modo, no se supondrá que la alfabetización digital modifica cuantitativamente la magnitud de un efecto que aún no ha sido contrastado.</p>
+<h3>6.4. Proposiciones, evidencia requerida y alcance de las conclusiones</h3>
+<p>Las relaciones anteriores se sintetizan en la siguiente matriz para orientar el paso al Marco Metodológico. Las proposiciones no deben interpretarse como resultados ni como hipótesis causales verificadas.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Relación o proposición</th><th>Evidencia necesaria</th><th>Conclusión que podría sustentarse</th><th>Alcance</th></tr></thead>
+<tbody>
+<tr><td><strong>P1. X1 → Y1.</strong> Los métodos de promedio móvil y aprendizaje automático pueden presentar diferencias de error.</td><td>Pronósticos y valores observados emparejados por producto–periodo; MAE y RMSE sobre una misma prueba temporal.</td><td>Identificar el método con menor error en las condiciones evaluadas, sin asumir superioridad universal.</td><td><strong>Evaluación prevista</strong> (objetivos 5 y 6).</td></tr>
+<tr><td><strong>P2. Pronóstico → decisiones.</strong> La estimación puede aportar información a la planificación y al reabastecimiento.</td><td>Descripción de reglas de decisión y, si se define, evidencia de consulta o aplicación del pronóstico.</td><td>Explicar el mecanismo conceptual de apoyo; no demostrar todavía que el sistema fue utilizado ni que mejoró resultados.</td><td><strong>Relación conceptual</strong>; X2 pendiente.</td></tr>
+<tr><td><strong>P3. Decisiones → Y2a/Y2b.</strong> Los resultados de producción e inventarios podrían diferir al incorporarse información predictiva.</td><td>Indicadores operativos y registros suficientes y comparables; control o discusión de condiciones externas.</td><td>Describir diferencias observadas o resultados simulados, según el diseño; no atribuir automáticamente causalidad.</td><td><strong>Evaluación condicionada</strong> por disponibilidad de datos (objetivo 6).</td></tr>
+</tbody></table></div>
+<p>Finalmente, los nuevos registros de ventas, producción e inventarios podrán ampliar el histórico y permitir nuevas comparaciones. Ese <strong>ciclo de retroalimentación informativa</strong> no implica que el modelo aprenda de forma automática: cualquier actualización o reentrenamiento requerirá un procedimiento técnico definido. La correspondencia precisa entre estas relaciones, los objetivos y las evidencias se presenta en el apartado 7.</p>
+</section>
+<section id="sec7">
+<h2>7. Correspondencia con los objetivos de investigación</h2>
+<p>La correspondencia entre problema, conceptos, variables, indicadores y objetivos permite comprobar la coherencia interna de SmartInventoryIA y delimitar qué evidencias serán necesarias para responder a la pregunta de investigación. Los seis objetivos específicos conservan su formulación original; lo que se precisa en este apartado es <strong>cómo contribuye cada uno a construir o evaluar la solución</strong>. No todos implican una variable dependiente: algunos se orientan al diagnóstico, al tratamiento de datos o al desarrollo del sistema, mientras que otros requieren una comparación de resultados.</p>
+<h3>7.1. Matriz de alineación entre objetivos, variables, indicadores y evidencias</h3>
+<p>La Tabla 7 relaciona los objetivos con las categorías definidas en los apartados 2 a 4, las dimensiones e indicadores propuestos en el apartado 5 y las relaciones descritas en el apartado 6. Las evidencias se expresan como <em>productos o registros que deberán obtenerse</em>, no como resultados ya alcanzados.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Objetivo específico (formulación original)</th><th>Conceptos, variables o condiciones vinculadas</th><th>Dimensiones e indicadores pertinentes</th><th>Evidencia esperada y proyección metodológica</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>OE1.</strong> Diagnosticar el estado actual de los procesos administrativos, productivos y de gestión de inventarios en la microempresa Delicias de la Tierrita.</td>
+<td>Procesos de ventas, producción e inventarios; características y restricciones de la microempresa; <strong>C1</strong> (calidad y disponibilidad de los datos). Contexto para <strong>Y2a</strong> y <strong>Y2b</strong>.</td>
+<td>Descripción del registro actual y del flujo de información; completitud, continuidad y cobertura de registros disponibles. Identificación de cuáles indicadores operativos tienen una línea base viable.</td>
+<td>Caracterización del proceso actual, inventario de fuentes y diagnóstico de información. El Marco Metodológico deberá definir las técnicas de levantamiento (por ejemplo, revisión documental, observación o entrevista) y cómo se establecerá la línea base, si los datos lo permiten.</td>
+</tr>
+<tr>
+<td><strong>OE2.</strong> Digitalizar y estructurar los datos históricos de ventas y producción para su análisis.</td>
+<td>Sistema de información empresarial, organización de datos y <strong>C1</strong>. Las ventas registradas podrán aproximar la demanda observada, con las limitaciones indicadas en el apartado 5.</td>
+<td>Completitud de registros (%), número y proporción de periodos utilizables por producto; consistencia de fechas, unidades e identificadores. La ausencia de un registro no se interpretará automáticamente como una venta igual a cero.</td>
+<td>Conjunto de datos estructurado, reglas documentadas de depuración y reporte de calidad. La metodología deberá especificar campos, fuentes, periodo de análisis y criterios de inclusión, exclusión y tratamiento de datos faltantes.</td>
+</tr>
+<tr>
+<td><strong>OE3.</strong> Diseñar la arquitectura de un sistema web empresarial multiusuario para la gestión de inventarios, producción y ventas.</td>
+<td>Sistema de información empresarial; roles y procesos operativos; transformación digital como contexto de incorporación.</td>
+<td>Criterios de diseño y cobertura de requisitos funcionales: arquitectura propuesta, modelo de datos, roles, integraciones y correspondencia entre módulos y necesidades identificadas. <strong>No se convierte el diseño en una variable estadística.</strong></td>
+<td>Especificación de arquitectura, modelo de datos y requisitos trazables al diagnóstico. La metodología deberá identificar el procedimiento de diseño y los criterios de revisión técnica o validación.</td>
+</tr>
+<tr>
+<td><strong>OE4.</strong> Implementar los módulos funcionales del sistema, incluyendo inventario, producción, ventas y reportes financieros básicos.</td>
+<td>Sistema web y procesos de gestión de inventarios, producción y ventas. El <strong>uso efectivo del sistema (X2)</strong> permanece pendiente de decisión metodológica.</td>
+<td>Cumplimiento de funcionalidades previstas; resultados de pruebas por módulo, flujo de datos entre registros y reportes. Estos son <strong>criterios de verificación del producto tecnológico</strong>, distintos de los indicadores de impacto operativo.</td>
+<td>Módulos implementados y evidencias de pruebas funcionales o de aceptación, según el procedimiento que se adopte. La metodología deberá definir casos de prueba y criterios de conformidad; implementar un módulo no prueba por sí mismo una reducción de mermas o faltantes.</td>
+</tr>
+<tr>
+<td><strong>OE5.</strong> Desarrollar y comparar un método tradicional de estimación de demanda (promedio móvil) y un modelo predictivo basado en aprendizaje automático.</td>
+<td><strong>X1</strong> (método de pronóstico); demanda observada o aproximada como referencia; <strong>Y1</strong> (error predictivo); <strong>C1 y C2</strong> como condiciones de validez y comparación.</td>
+<td>Método empleado y parámetros; errores <strong>MAE</strong> y <strong>RMSE</strong> por producto y periodo. Mismos productos, unidades, horizonte y partición cronológica de prueba para ambos métodos.</td>
+<td>Bitácora de experimentos, pronósticos y valores observados emparejados, tabla comparativa de errores. El Marco Metodológico deberá precisar método de aprendizaje automático, configuración del promedio móvil, horizonte, separación temporal y procedimiento de evaluación.</td>
+</tr>
+<tr>
+<td><strong>OE6.</strong> Evaluar el desempeño de ambos métodos mediante métricas estadísticas y analizar su impacto en la optimización de producción e inventarios.</td>
+<td><strong>Y1</strong> para la evaluación predictiva; <strong>Y2a</strong> (planificación de producción) y <strong>Y2b</strong> (gestión de inventarios) para el análisis operativo. Condiciones productivas y de abastecimiento; <strong>X2 continúa pendiente</strong>.</td>
+<td>Comparación de MAE y RMSE. Según disponibilidad de registros válidos: desviación de producción, tasa de merma, episodios de agotamiento, discrepancias de inventario o reposiciones tardías. No se considerarán todos obligatorios sin diagnóstico.</td>
+<td>Informe de evaluación predictiva y análisis operativo con fuentes, periodos y limitaciones explícitas. Si existe una línea base comparable podrá describirse el cambio observado; si solo son viables escenarios simulados, sus resultados se presentarán como simulaciones, no como impacto real demostrado.</td>
+</tr>
+</tbody></table></div>
+<p class="small">Nota. OE = objetivo específico; X1 = método de pronóstico; Y1 = error de pronóstico; Y2a = desempeño de planificación de producción; Y2b = desempeño de inventarios; C1 = calidad y disponibilidad de datos; C2 = producto, periodo y horizonte comparables. X2 (uso de SmartInventoryIA) se conserva únicamente como cuestión metodológica pendiente. Elaboración propia a partir de los objetivos originales y de las dimensiones propuestas en este documento.</p>
+<h3>7.2. Alcance de las evidencias por grupos de objetivos</h3>
+<p>Los <strong>objetivos 1 y 2</strong> proporcionan el diagnóstico y los datos que hacen posible el análisis posterior. Su cumplimiento se comprobará mediante la caracterización de los procesos y la calidad del conjunto de datos disponible; no exige demostrar todavía mejoras en los inventarios. Los <strong>objetivos 3 y 4</strong> corresponden al desarrollo tecnológico: su evidencia central será la trazabilidad entre necesidades, diseño, módulos implementados y pruebas. Estos productos permiten verificar la construcción de SmartInventoryIA, pero no sustituyen la evaluación predictiva ni la operativa.</p>
+<p>Los <strong>objetivos 5 y 6</strong> exigen evidencia de evaluación. En el primero, la relación analítica principal es <strong>X1 → Y1</strong>, con MAE y RMSE calculados en condiciones comparables. En el segundo, se retoma ese resultado y se examina, cuando los registros lo permitan, el comportamiento de <strong>Y2a y Y2b</strong> con sus indicadores propios. La precisión predictiva y el desempeño operativo constituyen planos distintos: un menor error no basta para afirmar que disminuyeron la merma, los faltantes o los costos. Esta separación es coherente con la literatura sobre integración del pronóstico y la gestión de inventarios (Goltsos et al., 2022; Prak &amp; Teunter, 2019; Wahedi et al., 2023).</p>
+<h3>7.3. Puente hacia el Marco Metodológico</h3>
+<p>La matriz anterior permite derivar los componentes mínimos que deberá concretar el Marco Metodológico, sin anticipar decisiones que dependen del diagnóstico:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Decisión metodológica por precisar</th><th>Origen en este marco conceptual</th><th>Consecuencia para el estudio</th></tr></thead>
+<tbody>
+<tr><td>Fuentes, participantes y técnicas de diagnóstico</td><td>OE1–OE2; condiciones C1 y contexto empresarial.</td><td>Definir cómo se caracterizan los procesos y cómo se comprueba la disponibilidad y calidad de los registros.</td></tr>
+<tr><td>Unidad de análisis y criterios de tratamiento de datos</td><td>OE2, OE5; observaciones producto–periodo, C1 y C2.</td><td>Precisar productos, granularidad, horizonte temporal, registros válidos y tratamiento de faltantes o ventas no realizadas.</td></tr>
+<tr><td>Procedimiento de desarrollo y verificación del sistema</td><td>OE3–OE4; requisitos, arquitectura, módulos y reportes.</td><td>Establecer fases de construcción, entregables técnicos, pruebas y criterios de aceptación.</td></tr>
+<tr><td>Diseño de comparación de pronósticos</td><td>OE5–OE6; relación X1 → Y1.</td><td>Definir modelos, configuración, partición cronológica, métricas y reporte comparable de resultados.</td></tr>
+<tr><td>Viabilidad de evaluación operativa</td><td>OE6; Y2a y Y2b.</td><td>Elegir indicadores obtenibles, periodos y fuentes comparables; justificar si el análisis será observacional, retrospectivo o simulado.</td></tr>
+<tr><td>Medición del uso de SmartInventoryIA (pendiente)</td><td>X2; relación operativa conceptual, no probada.</td><td>Decidir posteriormente si se incorporará como variable observada o permanecerá como categoría contextual, sin afectar la comparación predictiva esencial.</td></tr>
+</tbody></table></div>
+<div class="box"><p><strong>Delimitación de las conclusiones.</strong> El cumplimiento de los objetivos 1 a 4 evidencia diagnóstico y desarrollo de la solución; el objetivo 5 permite identificar diferencias de error entre métodos en los datos evaluados; y el objetivo 6 requiere datos adicionales para sustentar afirmaciones sobre producción e inventarios. En ausencia de una comparación operativa válida no se afirmará que SmartInventoryIA produjo una optimización real, sino que se describirá el alcance verificable del análisis.</p></div>
+</section>
+<section id="sec8">
+<h2>8. Integración de perspectivas teóricas y justificación de las relaciones</h2>
+<p>La fundamentación del modelo conceptual no se limita a definir términos. Se utiliza para justificar por qué ciertos elementos se consideran condiciones de entrada, mecanismos tecnológicos, variables de comparación o resultados operativos. Para evitar atribuciones que excedan la evidencia, se diferencia entre las relaciones examinadas por la literatura y la aplicación específica que SmartInventoryIA propone para Delicias de la Tierrita.</p>
+<h3>8.1. Sistemas empresariales y administración de operaciones</h3>
+<p>Laudon y Laudon (2020) presentan los sistemas de información como una integración de datos, tecnología, personas y procedimientos que permite apoyar las operaciones y las decisiones organizacionales. Wang et al. (2022) complementan esta perspectiva al relacionar los sistemas empresariales con el aprovechamiento de información y capacidades analíticas. En el caso estudiado, estas contribuciones fundamentan el registro estructurado de ventas, producción e inventarios como requisito para contar con información que pueda analizarse. No implican, por sí solas, que la digitalización garantice datos completos o decisiones acertadas.</p>
+<p>Desde la administración de operaciones, Heizer et al. (2017) ofrecen bases para distinguir la planificación de la producción del control de inventarios. Goltsos et al. (2022) y Prak y Teunter (2019) destacan la importancia de vincular pronósticos, incertidumbre y decisiones de inventario. Estos aportes sustentan que el pronóstico puede ser un insumo de las decisiones operativas, pero no reemplaza el examen de existencias, capacidad, tiempos de entrega y disponibilidad de recursos. Esta distinción fundamenta que los resultados operativos se representen mediante Y2a (planificación de producción) y Y2b (gestión de inventarios), con dimensiones e indicadores diferentes.</p>
+<h3>8.2. Aprendizaje automático, pronóstico y evaluación de modelos</h3>
+<p>Russell y Norvig (2021) permiten situar la inteligencia artificial como campo general y Janiesch et al. (2021) explican el aprendizaje automático como enfoque que aprende patrones a partir de datos. Kotu y Deshpande (2019) y Fildes et al. (2022) aportan referencias para comprender el pronóstico como estimación de una variable futura a partir de información disponible y de su comportamiento temporal. En consecuencia, el aprendizaje automático constituye la base del método propuesto, mientras que el pronóstico es su resultado y el error es la medida de diferencia frente al valor observado.</p>
+<p>Makridakis et al. (2018) justifican comparar empíricamente enfoques de pronóstico en condiciones equivalentes, sin asumir que un método de mayor complejidad será siempre superior. Franco et al. (2026) y Dornela Goulart et al. (2026) aportan antecedentes de aplicación de aprendizaje automático a problemas de previsión e inventario en organizaciones con características diferentes. Estas contribuciones respaldan la pertinencia del desarrollo, pero no demuestran anticipadamente su desempeño en Delicias de la Tierrita. Por ello, X1 corresponde al <em>método de pronóstico</em> y Y1 al <em>error predictivo</em>, evaluado con MAE y RMSE para productos, periodos y horizontes comparables.</p>
+<p>Wahedi et al. (2023) muestran la necesidad de distinguir los resultados de pronóstico de los resultados relacionados con la planificación de inventarios. Esta distinción limita la interpretación de Y1: identificar un menor error predictivo no demuestra, por ese solo hecho, una reducción de merma, faltantes o costos operativos.</p>
+<h3>8.3. Tecnología–Organización–Entorno (TOE) y difusión de innovaciones (DOI)</h3>
+<p>El marco Tecnología–Organización–Entorno (TOE) ofrece criterios para examinar las condiciones tecnológicas, organizacionales y externas que acompañan la adopción de herramientas digitales. Sánchez et al. (2025), al integrar TOE con elementos de la teoría de difusión de innovaciones (DOI), consideran atributos como ventaja relativa, compatibilidad y complejidad percibida; Omrani et al. (2024) estudian factores de transformación digital en pequeñas y medianas empresas.</p>
+<p>En SmartInventoryIA, estas perspectivas justifican describir la disponibilidad de recursos, la adecuación a los procesos existentes y las restricciones de abastecimiento o acceso tecnológico. Se consideran <em>categorías contextuales para interpretar la incorporación del sistema</em>, no variables moderadoras demostradas ni relaciones que deban someterse automáticamente a pruebas estadísticas. Su presencia no sustituye la evidencia requerida para comparar X1 con Y1 o para analizar los resultados Y2a y Y2b.</p>
+<h3>8.4. Transformación digital y alfabetización digital</h3>
+<p>Kahveci (2025) propone comprender la transformación digital como un proceso que comprende preparación, planificación, incorporación y mejora continua. Los estudios de Zahoor et al. (2023), Raharjo et al. (2024) y Coco et al. (2024) destacan la relevancia de las capacidades digitales y el acompañamiento para comprender la utilización de tecnologías en pequeñas empresas. En el contexto del proyecto, estas referencias permiten reconocer que registrar información, consultar reportes e interpretar pronósticos exige capacidades que pueden facilitar o dificultar la incorporación del sistema.</p>
+<p>La alfabetización digital y la transformación digital se conservan como conceptos de interpretación del caso. No se ha definido todavía una medición del uso del sistema (X2); por tanto, tampoco se afirma una mediación entre pronóstico, utilización y desempeño operativo, ni una moderación cuantitativa de las habilidades digitales. El Marco Metodológico decidirá, con base en las fuentes y los instrumentos disponibles, qué aspectos podrán caracterizarse de forma descriptiva.</p>
+<h3>8.5. Trazabilidad entre literatura, relaciones propuestas y objetivos</h3>
+<p>La siguiente matriz muestra qué función cumple cada grupo de referencias en el modelo. La expresión «aplicación al caso» identifica una proposición de SmartInventoryIA que deberá examinarse y no una conclusión previamente demostrada para la microempresa.</p>
+<div class="table-wrap"><table><thead><tr><th>Relación o elemento conceptual</th><th>Sustento bibliográfico</th><th>Aplicación y límite en SmartInventoryIA</th><th>Vínculo con objetivos</th></tr></thead><tbody>
+<tr><td>Datos organizados → capacidad de análisis</td><td>Laudon y Laudon (2020); Wang et al. (2022)</td><td>Fundamenta el sistema de información y la caracterización de calidad de registros (C1); la calidad real deberá diagnosticarse.</td><td>OE1, OE2, OE3 y OE4.</td></tr>
+<tr><td>X1. Método de pronóstico → Y1. Error predictivo</td><td>Janiesch et al. (2021); Kotu y Deshpande (2019); Fildes et al. (2022); Makridakis et al. (2018)</td><td>Justifica comparar promedio móvil y aprendizaje automático, con condiciones comunes (C2), sin anticipar el resultado.</td><td>OE5 y OE6.</td></tr>
+<tr><td>Pronósticos → decisiones de producción e inventario</td><td>Heizer et al. (2017); Goltsos et al. (2022); Prak y Teunter (2019)</td><td>Sustenta el vínculo conceptual entre estimación, planificación (Y2a) y existencias (Y2b); las mejoras requieren medición adicional.</td><td>OE1, OE4 y OE6.</td></tr>
+<tr><td>Precisión estadística ≠ beneficio operativo automático</td><td>Wahedi et al. (2023)</td><td>Exige interpretar separadamente Y1, Y2a y Y2b y delimitar las conclusiones según los datos.</td><td>OE5 y OE6.</td></tr>
+<tr><td>Condiciones de incorporación y capacidades digitales</td><td>Sánchez et al. (2025); Omrani et al. (2024); Kahveci (2025); Zahoor et al. (2023); Raharjo et al. (2024); Coco et al. (2024)</td><td>Permiten interpretar restricciones organizacionales y humanas. X2 (uso del sistema) continúa pendiente de definición; no se prueban efectos moderadores o mediadores.</td><td>OE1, OE3, OE4 y, como contexto, OE6.</td></tr>
+</tbody></table></div>
+<p class="small">Nota. OE = objetivo específico. Los autores se emplean para fundamentar categorías y relaciones generales; las asociaciones concretas planteadas para Delicias de la Tierrita deberán contrastarse durante el desarrollo y la evaluación.</p>
+</section>
+<section id="sec9">
+<h2>9. Delimitación del alcance conceptual y condiciones de evaluación</h2>
+<p>SmartInventoryIA corresponde a una investigación aplicada orientada al desarrollo de una solución tecnológica para un caso empresarial específico. Su marco conceptual permite formular relaciones y seleccionar indicadores pertinentes, pero no determina por sí mismo el diseño completo de la investigación, las técnicas de recolección ni el procedimiento de validación. Estos elementos deben establecerse en el Marco Metodológico a partir del diagnóstico y de la viabilidad de las fuentes de información.</p>
+<h3>9.1. Unidades de estudio, observación y comparación</h3>
+<p>La <strong>unidad de estudio organizacional</strong> es la microempresa Delicias de la Tierrita. Para la evaluación predictiva, las observaciones corresponderán a combinaciones de <strong>producto y periodo</strong> con un horizonte temporal definido. Esta distinción permite analizar varias observaciones sin confundirlas con una muestra de varias empresas. La granularidad, los productos seleccionados y el intervalo histórico se fijarán de acuerdo con los registros utilizables.</p>
+<p>Cuando solo se disponga de ventas, estas se tratarán como una <strong>aproximación de la demanda observada</strong>, con la posibilidad de subestimación si existieron pedidos no atendidos. Un periodo sin registro no se interpretará como demanda cero sin verificar la situación operativa. Esta condición afecta la definición del dato objetivo y la validez del cálculo de Y1.</p>
+<h3>9.2. Alcance de la comparación predictiva</h3>
+<p>La relación X1 → Y1 se examinará mediante la comparación del promedio móvil con un método de aprendizaje automático, utilizando los mismos productos, periodos de prueba, unidades y horizonte de pronóstico. La secuencia temporal deberá respetarse para evitar que el método use información futura al construir una predicción. MAE y RMSE se interpretarán como medidas del error en los datos de evaluación; los resultados no garantizan superioridad en otros productos, periodos o empresas.</p>
+<h3>9.3. Alcance del análisis operativo</h3>
+<p>Y2a y Y2b representan resultados potencialmente observables en la planificación de producción y la gestión de inventarios. El diagnóstico determinará cuáles indicadores cuentan con registros suficientes y comparables. Una disminución de desviaciones, mermas o agotamientos solo podrá informarse cuando exista evidencia adecuada para calcularla. Además, una variación observada puede deberse a estacionalidad, cambios en ventas, abastecimiento, capacidad productiva u otras condiciones: no se atribuirá automáticamente al sistema.</p>
+<p>Si la información no permite una comparación operativa directa, el estudio podrá limitarse a describir el proceso o, si se justifica, explorar escenarios retrospectivos o simulados. En ese caso, las estimaciones de escenario se identificarán explícitamente como <strong>resultados de simulación</strong> y no como ahorros, reducciones de merma o mejoras reales comprobadas.</p>
+<h3>9.4. Decisiones pendientes para el Marco Metodológico</h3>
+<div class="table-wrap"><table><thead><tr><th>Decisión</th><th>Base conceptual ya definida</th><th>Qué habrá que precisar metodológicamente</th></tr></thead><tbody>
+<tr><td>Disponibilidad y tratamiento de datos</td><td>C1; registros producto–periodo; ventas como aproximación de demanda.</td><td>Fuentes, campos, periodo disponible, limpieza, faltantes, unidad temporal y criterios de inclusión.</td></tr>
+<tr><td>Evaluación predictiva</td><td>X1 → Y1; MAE y RMSE; condiciones comparables C2.</td><td>Configuración del promedio móvil, algoritmo de aprendizaje automático, horizonte, separación cronológica y protocolo de evaluación.</td></tr>
+<tr><td>Evaluación operativa</td><td>Y2a y Y2b; indicadores condicionados del apartado 5.</td><td>Línea base y registros posteriores si existen; o criterios y supuestos para un análisis retrospectivo o simulado.</td></tr>
+<tr><td>Uso del sistema</td><td>X2 reservado como posible categoría explicativa; alfabetización digital como contexto.</td><td>Decidir si el uso será medido y, de ser así, mediante qué observaciones e instrumentos. No es una condición para ejecutar la comparación predictiva.</td></tr>
+<tr><td>Desarrollo del artefacto</td><td>Sistema empresarial multiusuario, módulos de ventas, producción e inventarios.</td><td>Fases de desarrollo, trazabilidad de requisitos, pruebas técnicas, criterios de aceptación y documentación de resultados.</td></tr>
+</tbody></table></div>
+<div class="box"><p><strong>Límite interpretativo.</strong> El propósito de «optimizar» consignado en la pregunta y el objetivo general expresa un resultado buscado, no un beneficio demostrado. El estudio deberá distinguir entre (a) sistema construido y verificado, (b) pronósticos evaluados y (c) efectos o cambios operativos sustentados con datos. Si alguno de estos niveles no alcanza evidencia suficiente, se declarará su alcance real sin sustituirlo por inferencias de otro nivel.</p></div>
+</section>
+<section id="sec10">
+<h2>10. Síntesis conceptual</h2>
+<p>El problema que aborda SmartInventoryIA es la dificultad para disponer y aprovechar información organizada de ventas, producción e inventarios en la microempresa Delicias de la Tierrita. La solución propuesta integra un sistema web empresarial que estructura dichos registros y un componente de pronóstico de demanda por producto. Esta delimitación permite reconocer que los sistemas de información, la inteligencia artificial y la transformación digital son conceptos que fundamentan la solución, pero no constituyen automáticamente variables de evaluación.</p>
+<p>La relación analítica principal enfrenta dos modalidades de <strong>X1, método de pronóstico</strong> —promedio móvil y aprendizaje automático— y las compara mediante <strong>Y1, error predictivo</strong>, operacionalizado con MAE y RMSE. La disponibilidad y calidad de registros (C1), así como la correspondencia entre producto, periodo y horizonte (C2), son condiciones necesarias para interpretar dicha comparación. La demanda observada o su aproximación mediante ventas constituye el valor de referencia de la predicción y no debe confundirse con el error calculado.</p>
+<p>En un segundo plano, los pronósticos pueden aportar información a las decisiones operativas. Sus posibles resultados se organizan en <strong>Y2a, desempeño de planificación de producción</strong>, y <strong>Y2b, desempeño de gestión de inventarios</strong>, con dimensiones e indicadores propios cuya medición dependerá de los registros realmente disponibles. El <strong>uso de SmartInventoryIA (X2)</strong> se conserva como una decisión metodológica pendiente; en consecuencia, no se presupone una relación causal probada entre utilización del sistema y mejoras operativas. La alfabetización digital, la transformación digital y las restricciones productivas y de abastecimiento se consideran condiciones contextuales relevantes para interpretar el caso.</p>
+<p>La literatura revisada sustenta esta articulación desde los sistemas empresariales, la administración de operaciones, el pronóstico de demanda y los enfoques de adopción tecnológica. La matriz de trazabilidad del apartado 8 muestra cómo las referencias apoyan las relaciones planteadas sin convertir antecedentes generales en resultados específicos de la microempresa. A su vez, las matrices de los apartados 5 y 7 permiten conectar las variables con sus dimensiones, indicadores, evidencias y objetivos de investigación.</p>
+<div class="box"><p><strong>Conclusión de coherencia.</strong> La secuencia construida —problema → conceptos centrales → variables o categorías → dimensiones → indicadores → relaciones → objetivos— establece el fundamento conceptual de SmartInventoryIA. El Marco Metodológico deberá especificar <em>cómo</em> se recopilarán, procesarán y analizarán las evidencias. Con ello será posible distinguir la construcción del sistema, el desempeño del pronóstico y la eventual mejora operativa, sin afirmar resultados que todavía no han sido observados.</p></div>
+</section>
+<section id="bibliografia">
+<h2>Referencias</h2>
+
+<ol class="refs">
+<li>Coco, N., Colapinto, C., &amp; Finotto, V. (2024). Fostering digital literacy among small and micro-enterprises: Digital transformation as an open and guided innovation process. <a href="https://doi.org/10.1111/radm.12645">https://doi.org/10.1111/radm.12645</a></li>
+<li>Decreto 957 de 2019. (2019). <a href="https://relatoria.colombiacompra.gov.co/normativa/decreto-957-de-2019/">https://relatoria.colombiacompra.gov.co/normativa/decreto-957-de-2019/</a></li>
+<li>Dornela Goulart, D., Baroni de Carvalho, R., Almeida Henriques, M., &amp; Kawany Gonçalves Nunes Carvalho, B. (2026). Predictive models for inventory optimization: A machine learning application for demand forecasting at a construction supplies distributor. <em>Future Business Journal, 12</em>(1), 92. <a href="https://doi.org/10.1186/s43093-026-00807-8">https://doi.org/10.1186/s43093-026-00807-8</a></li>
+<li>Fildes, R., Ma, S., &amp; Kolassa, S. (2022). Retail forecasting: Research and practice. <em>International Journal of Forecasting, 38</em>(4), 1283–1318. <a href="https://doi.org/10.1016/j.ijforecast.2019.06.004">https://doi.org/10.1016/j.ijforecast.2019.06.004</a></li>
+<li>Franco, J. K., Guevara, N. M., Castaneda, P., Mansilla-Lopez, J., &amp; Garcia-Nunez, A. D. (2026). A machine learning-based stock forecasting method for inventory optimization in micro and small enterprises. <em>Engineering, Technology &amp; Applied Science Research, 16</em>(1), 32081–32088. <a href="https://doi.org/10.48084/etasr.15535">https://doi.org/10.48084/etasr.15535</a></li>
+<li>Goltsos, T. E., Syntetos, A. A., Glock, C. H., &amp; Ioannou, G. (2022). Inventory–forecasting: Mind the gap. <em>European Journal of Operational Research, 299</em>(2), 397–419. <a href="https://doi.org/10.1016/j.ejor.2021.07.040">https://doi.org/10.1016/j.ejor.2021.07.040</a></li>
+<li>Heizer, J. H., Render, B., &amp; Munson, C. (2017). <em>Operations management: Sustainability and supply chain management</em> (12th ed., global ed.). Pearson.</li>
+<li>Janiesch, C., Zschech, P., &amp; Heinrich, K. (2021). Machine learning and deep learning. <em>Electronic Markets, 31</em>(3), 685–695. <a href="https://doi.org/10.1007/s12525-021-00475-2">https://doi.org/10.1007/s12525-021-00475-2</a></li>
+<li>Kahveci, E. (2025). Digital transformation in SMEs: Enablers, interconnections, and a framework for sustainable competitive advantage. <em>Administrative Sciences, 15</em>(3), 107. <a href="https://doi.org/10.3390/admsci15030107">https://doi.org/10.3390/admsci15030107</a></li>
+<li>Kotu, V., &amp; Deshpande, B. (2019). <em>Data science: Concepts and practice</em> (2nd ed.). Elsevier/Morgan Kaufmann Publishers.</li>
+<li>Laudon, K. C., &amp; Laudon, J. P. (2020). <em>Management information systems: Managing the digital firm</em> (16th ed.). Pearson.</li>
+<li>Makridakis, S., Spiliotis, E., &amp; Assimakopoulos, V. (2018). Statistical and machine learning forecasting methods: Concerns and ways forward. <em>PLOS ONE, 13</em>(3), e0194889. <a href="https://doi.org/10.1371/journal.pone.0194889">https://doi.org/10.1371/journal.pone.0194889</a></li>
+<li>Omrani, N., Rejeb, N., Maalaoui, A., Dabić, M., &amp; Kraus, S. (2024). Drivers of digital transformation in SMEs. <em>IEEE Transactions on Engineering Management, 71</em>, 5030–5043. <a href="https://doi.org/10.1109/TEM.2022.3215727">https://doi.org/10.1109/TEM.2022.3215727</a></li>
+<li>Prak, D., &amp; Teunter, R. (2019). A general method for addressing forecasting uncertainty in inventory models. <em>International Journal of Forecasting, 35</em>(1), 224–238. <a href="https://doi.org/10.1016/j.ijforecast.2017.11.004">https://doi.org/10.1016/j.ijforecast.2017.11.004</a></li>
+<li>Raharjo, K., Afrianty, T. W., &amp; Prakasa, Y. (2024). Digital literacy and business transformation: Social-cognitive learning perspectives in small business enterprises. <em>Cogent Business &amp; Management, 11</em>(1), 2376282. <a href="https://doi.org/10.1080/23311975.2024.2376282">https://doi.org/10.1080/23311975.2024.2376282</a></li>
+<li>Russell, S. J., &amp; Norvig, P. (2021). <em>Artificial intelligence: A modern approach</em> (4th ed.). Pearson.</li>
+<li>Sánchez, E., Calderón, R., &amp; Herrera, F. (2025). Artificial intelligence adoption in SMEs: Survey based on TOE–DOI framework, primary methodology and challenges. <em>Applied Sciences, 15</em>(12), 6465. <a href="https://doi.org/10.3390/app15126465">https://doi.org/10.3390/app15126465</a></li>
+<li>Wahedi, H. J., Heltoft, M., Christophersen, G. J., Severinsen, T., Saha, S., &amp; Nielsen, I. E. (2023). Forecasting and inventory planning: An empirical investigation of classical and machine learning approaches for Svanehøj’s future software consolidation. <em>Applied Sciences, 13</em>(15), 8581. <a href="https://doi.org/10.3390/app13158581">https://doi.org/10.3390/app13158581</a></li>
+<li>Wang, W. Y. C., Pauleen, D., &amp; Taskin, N. (2022). Enterprise systems, emerging technologies, and the data-driven knowledge organisation. <em>Knowledge Management Research &amp; Practice, 20</em>(1), 1–13. <a href="https://doi.org/10.1080/14778238.2022.2039571">https://doi.org/10.1080/14778238.2022.2039571</a></li>
+<li>Zahoor, N., Zopiatis, A., Adomako, S., &amp; Lamprinakos, G. (2023). The micro-foundations of digitally transforming SMEs: How digital literacy and technology interact with managerial attributes. <em>Journal of Business Research, 159</em>, 113755. <a href="https://doi.org/10.1016/j.jbusres.2023.113755">https://doi.org/10.1016/j.jbusres.2023.113755</a></li>
+</ol>
+</section>
+</main>
+<script>
+(function(){
+  const doc=document.getElementById('documento');
+  const toggle=document.getElementById('editToggle');
+  toggle.addEventListener('click',function(){
+    const editable=doc.getAttribute('contenteditable') !== 'true';
+    doc.setAttribute('contenteditable',String(editable));
+    toggle.setAttribute('aria-pressed',String(editable));
+    toggle.textContent=editable?'Edición activada':'Edición desactivada';
+  });
+  document.getElementById('saveHtml').addEventListener('click',function(){
+    const copy=document.documentElement.cloneNode(true);
+    copy.querySelector('#documento').setAttribute('contenteditable','true');
+    const blob=new Blob(['<!doctype html>\n'+copy.outerHTML],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='Marco_Conceptual_SmartInventoryIA_editado_v5.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),500);
+  });
+})();
+</script>
+</body>
+</html>
