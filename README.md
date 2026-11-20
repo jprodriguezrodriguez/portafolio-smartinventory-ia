@@ -1,38 +1,17 @@
 # Portafolio SmartInventoryIA
 
-Página estática en HTML y CSS, sin JavaScript, frameworks, fuentes externas ni compilación. Compatible con GitHub Pages y apertura local.
+Abre `index.html` en un navegador. El portafolio usa HTML y CSS estáticos. Las fuentes Inter y Plus Jakarta Sans se cargan desde Google Fonts cuando hay conexión.
 
-## Archivos
+- `index.html` presenta el proyecto.
+- `paginas/` contiene los dos semestres y el prototipo.
+- `css/styles.css` contiene los estilos compartidos.
+- `assets/` conserva el logo y los iconos.
+- `documentos/` contiene las evidencias académicas originales. El borrador conceptual es un HTML autónomo con sus propios controles.
 
-- `index.html`: todo el contenido, enlaces, comentarios del docente y versiones. Hay comentarios HTML para localizar secciones y agregar las futuras V2.
-- `css/styles.css`: apariencia y adaptación a móvil. Los colores están al inicio, en `:root`.
-- `documentos/`: evidencias originales con nombres cortos para los enlaces.
+## Añadir una versión
 
-## Abrir
+Edita la sección correspondiente en `paginas/ctei-2.html`. Inserta un bloque `article.version` al principio de su línea de tiempo y conserva las entregas anteriores. Incluye la etiqueta, la fecha del documento, su estado, la descripción y los enlaces con rutas como `../documentos/nombre.pdf`. Usa `details` y `summary` para registrar la retroalimentación de cada versión, los cambios realizados y los pendientes.
 
-Abre `index.html` en el navegador. Los desplegables usan `<details>` y `<summary>` nativos de HTML. No almacenan comentarios nuevos: muestran la retroalimentación académica ya recibida.
+Para agregar un semestre, crea su página en `paginas/` y actualiza el menú compartido y los accesos de la portada. Marca la página activa con `aria-current="page"`.
 
-## Editar una entrega
-
-1. Busca su título en `index.html`.
-2. Cambia el texto dentro de los párrafos sin borrar las etiquetas.
-3. Para añadir una versión, copia un bloque completo `<article class="version">…</article>` dentro del `div` con clase `timeline` de esa sección.
-4. Coloca la más reciente primero y conserva la anterior. Cambia etiqueta de versión, fecha, descripción, comentarios y enlaces.
-5. Copia el nuevo documento a `documentos/` y utiliza ese nombre en `href="documentos/nombre.pdf"`.
-6. Abre la página y comprueba el enlace.
-
-No se ha creado una V2 ficticia. El borrador conceptual está disponible por separado hasta recibir el documento V2. La V2 metodológica se añadirá cuando esté terminada. No confundir una versión disponible con una versión aprobada por el docente.
-
-## Publicar en GitHub Pages
-
-Sube el CONTENIDO de esta carpeta a la raíz del repositorio elegido: `index.html`, `css/`, `documentos/`, `.nojekyll` y este README. No necesitas subir el ZIP.
-
-En GitHub, entra en Settings → Pages, selecciona publicación desde una rama (Deploy from a branch), la rama que contenga los archivos, y la carpeta raíz (`/root`). Guarda. Usa la URL que GitHub muestre cuando termine de publicar.
-
-Los enlaces locales son relativos para funcionar dentro de un repositorio de GitHub Pages. Esta entrega no ha sido subida ni publicada en GitHub.
-
-## Alcance de esta primera versión
-
-Incluye presentación, pregunta y objetivo, antecedentes, cuatro entregas, comentarios resumidos y su seguimiento, borrador conceptual y enlace al prototipo. Las fechas son las de los documentos, salvo aviso. No incluye video final ni resultados predictivos aún no demostrados.
-
-Los documentos se conservan como evidencia: los cambios al portafolio no corrigen los originales. El HTML conceptual adjunto es un archivo autónomo recibido, con su propio código y controles; la página principal del portafolio funciona exclusivamente con HTML y CSS.
+GitHub Pages puede servir estos mismos archivos desde la raíz elegida, con la estructura de carpetas y `.nojekyll`. No requiere compilación.
